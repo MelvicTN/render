@@ -1,11 +1,22 @@
+import pandas as pd
 import scipy.stats
 import streamlit as st
 import time
+
+
+# these are stateful variables which are preserved as Streamlin reruns this script
+if 'experiment_no' not in st.session_state:
+    st.session_state['experiment_no'] = 0
+
+if 'df_experiment_results' not in st.session_state:
+    st.session_state['df_experiment_results'] = pd.DataFrame(columns=['no', 'iterations', 'mean'])
+
 
 st.header('Tossing a Coin')
 
 
 # add line plot chart
+# `st.line_chart` - https://docs.streamlit.io/develop/api-reference/charts/st.line_chart
 chart = st.line_chart([0.5])
 
 
@@ -39,6 +50,26 @@ def toss_coin(n):
 number_of_trials = st.slider('Number of trials?', 1, 1000, 10)
 start_button = st.button('Run')
 
+
+
+# use two stateful variables as keys of `st.session_state` 
+# The session state is preserved over new runs of the Streamlit application. 
+# collecting results of experiments in the dataframe kept as `st.session_state['df_experiment_results']`
+# use these variables to show the dataframe after each run of the application
+
 if start_button:
     st.write(f'Running the experient of {number_of_trials} trials.')
+    st.session_state['experiment_no'] += 1
     mean = toss_coin(number_of_trials)
+    st.session_state['df_experiment_results'] = pd.concat([
+        st.session_state['df_experiment_results'],
+        pd.DataFrame(data=[[st.session_state['experiment_no'],
+                            number_of_trials,
+                            mean]],
+                     columns=['no', 'iterations', 'mean'])
+        ],
+        axis=0)
+    st.session_state['df_experiment_results'] = \
+        st.session_state['df_experiment_results'].reset_index(drop=True)
+
+st.write(st.session_state['df_experiment_results'])
