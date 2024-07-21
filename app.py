@@ -56,6 +56,7 @@ start_button = st.button('Run')
 # The session state is preserved over new runs of the Streamlit application. 
 # collecting results of experiments in the dataframe kept as `st.session_state['df_experiment_results']`
 # use these variables to show the dataframe after each run of the application
+# `st.dataframe` - https://docs.streamlit.io/develop/api-reference/data/st.dataframe
 
 if start_button:
     st.write(f'Running the experient of {number_of_trials} trials.')
